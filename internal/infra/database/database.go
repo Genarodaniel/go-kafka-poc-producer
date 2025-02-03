@@ -5,21 +5,25 @@ import (
 	"fmt"
 	"go-kafka-order-producer/config"
 
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
+
 	"github.com/golang-migrate/migrate/v4"
-	"github.com/golang-migrate/migrate/v4/database/mysql"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func Connect() *sql.DB {
 	connectionString := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?multiStatements=true&parseTime=true",
+		"user=%s password=%s dbname=%s host=%s port=%s sslmode=%s",
 		config.Config.DBUser,
 		config.Config.DBPassword,
+		config.Config.DBName,
 		config.Config.DBHost,
 		config.Config.DBPort,
-		config.Config.DBName,
+		"disable",
 	)
+
+	fmt.Println(connectionString)
 
 	db, err := sql.Open(config.Config.DBDriver, connectionString)
 	if err != nil {
@@ -35,14 +39,13 @@ func Connect() *sql.DB {
 }
 
 func Migrate(db *sql.DB) {
-	driver, _ := mysql.WithInstance(db, &mysql.Config{})
-	m, err := migrate.NewWithDatabaseInstance("file://../internal/database/migrations",
-		config.Config.DBDriver,
-		driver,
-	)
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
+	m, err := migrate.NewWithDatabaseInstance("file://../internal/infra/database/migrations", config.Config.DBDriver, driver)
 	if err != nil {
 		panic(err)
 	}
 
-	m.Up()
+	if err := m.Up(); err != nil {
+		panic(err)
+	}
 }

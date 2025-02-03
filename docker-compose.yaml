@@ -1,13 +1,16 @@
 services:
   db:
-    image: mysql:5.7
+    image: postgres:latest
+    restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "root"
-      MYSQL_USER: "address_system"
-      MYSQL_PASSWORD: "changeme"
-      MYSQL_DATABASE: "address"
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_USER: orders_api
+      POSTGRES_DB: orders
+      SCHEMA: orders
+    volumes:
+      - .docker/postgres:/data/postgres
     ports:
-    - "3306:3306"
+      - "5432:5432"
   goapp:
     build: .
     ports:
