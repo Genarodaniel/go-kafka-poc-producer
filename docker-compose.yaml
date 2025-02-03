@@ -1,0 +1,16 @@
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_USER: "address_system"
+      MYSQL_PASSWORD: "changeme"
+      MYSQL_DATABASE: "address"
+    ports:
+    - "3306:3306"
+  goapp:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
