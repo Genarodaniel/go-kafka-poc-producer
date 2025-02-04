@@ -39,7 +39,7 @@ func (h *OrderHandler) HandlePostOrder(ctx *gin.Context) {
 		return
 	}
 
-	response, err := h.OrderService.PostOrder(request)
+	response, err := h.OrderService.PostOrder(ctx, request)
 	if err != nil {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError, responses.DefaultErrorResponse{
 			Error:   true,

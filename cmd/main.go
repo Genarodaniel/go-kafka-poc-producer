@@ -16,7 +16,7 @@ func main() {
 
 	database.Migrate(db)
 
-	s := server.Init()
+	s := server.Init(db)
 	s.Run()
 
 }

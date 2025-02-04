@@ -1,5 +1,5 @@
 BEGIN;
 
-DROP TABLE "order";
+DROP TABLE "tab_order";
 
 COMMIT;

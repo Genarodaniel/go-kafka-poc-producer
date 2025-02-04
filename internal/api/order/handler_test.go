@@ -2,8 +2,10 @@ package order
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"errors"
+	repository "go-kafka-order-producer/internal/repository/spy"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -16,11 +18,11 @@ import (
 
 func TestHandlePostOrder(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	Router(&gin.Default().RouterGroup)
+	Router(&gin.Default().RouterGroup, &sql.DB{})
 	path := "/order/v1/"
 
 	t.Run("Should return error when payload is empty", func(t *testing.T) {
-		orderService := NewOrderService()
+		orderService := NewOrderService(repository.OrderRepositorySpy{})
 		addressHandler := NewOrderHandler(orderService)
 
 		w := httptest.NewRecorder()
@@ -40,7 +42,7 @@ func TestHandlePostOrder(t *testing.T) {
 		ioReader := bytes.NewBuffer(requestBytes)
 		ioRequest := io.NopCloser(ioReader)
 
-		orderService := NewOrderService()
+		orderService := NewOrderService(repository.OrderRepositorySpy{})
 		orderHandler := NewOrderHandler(orderService)
 
 		w := httptest.NewRecorder()
@@ -67,7 +69,7 @@ func TestHandlePostOrder(t *testing.T) {
 		ioReader := bytes.NewBuffer(requestBytes)
 		ioRequest := io.NopCloser(ioReader)
 
-		orderService := NewOrderService()
+		orderService := NewOrderService(repository.OrderRepositorySpy{})
 		orderHandler := NewOrderHandler(orderService)
 
 		w := httptest.NewRecorder()
@@ -98,11 +100,11 @@ func TestHandlePostOrder(t *testing.T) {
 		requestBytes, _ := json.Marshal(mockRequest)
 		ioReader := bytes.NewBuffer(requestBytes)
 		ioRequest := io.NopCloser(ioReader)
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
 
 		orderHandler := NewOrderHandler(orderService)
 
-		w := httptest.NewRecorder()
-		ctx, _ := gin.CreateTestContext(w)
 		ctx.Request = httptest.NewRequest(http.MethodPost, path, ioRequest)
 
 		orderHandler.HandlePostOrder(ctx)
