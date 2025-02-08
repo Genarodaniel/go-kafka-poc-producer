@@ -3,6 +3,7 @@ package order
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -81,66 +82,66 @@ func TestHandlePostOrder(t *testing.T) {
 		assert.Contains(t, string(response), "amount must be a positive number")
 	})
 
-	// t.Run("Should return an service error", func(t *testing.T) {
-	// 	errorMessage := "error to save order transaction"
-	// 	mockRequest := PostOrderRequest{
-	// 		Amount:   123.00,
-	// 		ClientID: uuid.NewString(),
-	// 		StoreID:  uuid.NewString(),
-	// 	}
+	t.Run("Should return an service error", func(t *testing.T) {
+		errorMessage := "error to save order transaction"
+		mockRequest := PostOrderRequest{
+			Amount:   123.00,
+			ClientID: uuid.NewString(),
+			StoreID:  uuid.NewString(),
+		}
 
-	// 	orderService := OrderServiceSpy{
-	// 		PostOrderResponse: PostOrderResponse{},
-	// 		PostOrderError:    errors.New(errorMessage),
-	// 	}
+		orderService := OrderServiceSpy{
+			PostOrderResponse: PostOrderResponse{},
+			PostOrderError:    errors.New(errorMessage),
+		}
 
-	// 	requestBytes, _ := json.Marshal(mockRequest)
-	// 	ioReader := bytes.NewBuffer(requestBytes)
-	// 	ioRequest := io.NopCloser(ioReader)
-	// 	w := httptest.NewRecorder()
-	// 	ctx, _ := gin.CreateTestContext(w)
+		requestBytes, _ := json.Marshal(mockRequest)
+		ioReader := bytes.NewBuffer(requestBytes)
+		ioRequest := io.NopCloser(ioReader)
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
 
-	// 	orderHandler := NewOrderHandler(orderService)
+		orderHandler := NewOrderHandler(orderService)
 
-	// 	ctx.Request = httptest.NewRequest(http.MethodPost, path, ioRequest)
+		ctx.Request = httptest.NewRequest(http.MethodPost, path, ioRequest)
 
-	// 	orderHandler.HandlePostOrder(ctx)
+		orderHandler.HandlePostOrder(ctx)
 
-	// 	response, _ := io.ReadAll(w.Body)
+		response, _ := io.ReadAll(w.Body)
 
-	// 	assert.Equal(t, http.StatusInternalServerError, w.Code)
-	// 	assert.Contains(t, string(response), errorMessage)
-	// })
+		assert.Equal(t, http.StatusInternalServerError, w.Code)
+		assert.Contains(t, string(response), errorMessage)
+	})
 
-	// t.Run("Should return an service error", func(t *testing.T) {
-	// 	mockRequest := PostOrderRequest{
-	// 		Amount:   123.00,
-	// 		ClientID: uuid.NewString(),
-	// 		StoreID:  uuid.NewString(),
-	// 	}
+	t.Run("Should create the order", func(t *testing.T) {
+		mockRequest := PostOrderRequest{
+			Amount:   123.00,
+			ClientID: uuid.NewString(),
+			StoreID:  uuid.NewString(),
+		}
 
-	// 	orderService := OrderServiceSpy{
-	// 		PostOrderResponse: PostOrderResponse{
-	// 			uuid.NewString(),
-	// 		},
-	// 		PostOrderError: nil,
-	// 	}
+		orderService := OrderServiceSpy{
+			PostOrderResponse: PostOrderResponse{
+				uuid.NewString(),
+			},
+			PostOrderError: nil,
+		}
 
-	// 	requestBytes, _ := json.Marshal(mockRequest)
-	// 	ioReader := bytes.NewBuffer(requestBytes)
-	// 	ioRequest := io.NopCloser(ioReader)
+		requestBytes, _ := json.Marshal(mockRequest)
+		ioReader := bytes.NewBuffer(requestBytes)
+		ioRequest := io.NopCloser(ioReader)
 
-	// 	orderHandler := NewOrderHandler(orderService)
+		orderHandler := NewOrderHandler(orderService)
 
-	// 	w := httptest.NewRecorder()
-	// 	ctx, _ := gin.CreateTestContext(w)
-	// 	ctx.Request = httptest.NewRequest(http.MethodPost, path, ioRequest)
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+		ctx.Request = httptest.NewRequest(http.MethodPost, path, ioRequest)
 
-	// 	orderHandler.HandlePostOrder(ctx)
+		orderHandler.HandlePostOrder(ctx)
 
-	// 	response, _ := io.ReadAll(w.Body)
+		response, _ := io.ReadAll(w.Body)
 
-	// 	assert.Equal(t, http.StatusCreated, w.Code)
-	// 	assert.Contains(t, string(response), "order_id")
-	// })
+		assert.Equal(t, http.StatusCreated, w.Code)
+		assert.Contains(t, string(response), "order_id")
+	})
 }
