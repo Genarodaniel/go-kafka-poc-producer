@@ -3,9 +3,8 @@ package order
 import (
 	"context"
 	"fmt"
-	"go-kafka-order-producer/internal/repository"
 
-	orderRepository "go-kafka-order-producer/internal/repository/order"
+	"github.com/google/uuid"
 )
 
 type OrderServiceInterface interface {
@@ -13,27 +12,16 @@ type OrderServiceInterface interface {
 }
 
 type OrderService struct {
-	OrderRepository repository.OrderRepositoryInterface
 }
 
-func NewOrderService(orderRepository repository.OrderRepositoryInterface) *OrderService {
-	return &OrderService{
-		OrderRepository: orderRepository,
-	}
+func NewOrderService() *OrderService {
+	return &OrderService{}
 }
 
 func (a *OrderService) PostOrder(ctx context.Context, order *PostOrderRequest) (*PostOrderResponse, error) {
-	orderEntity := orderRepository.Order{
-		StoreID:  order.StoreID,
-		ClientID: order.ClientID,
-	}
-
-	result, err := a.OrderRepository.SaveOrder(ctx, orderEntity)
-	if err != nil {
-		return nil, fmt.Errorf("error to save order %s", err.Error())
-	}
+	fmt.Println(order)
 
 	return &PostOrderResponse{
-		OrderID: result,
+		OrderID: uuid.NewString(),
 	}, nil
 }

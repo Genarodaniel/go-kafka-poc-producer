@@ -2,7 +2,6 @@ package main
 
 import (
 	"go-kafka-order-producer/config"
-	"go-kafka-order-producer/internal/infra/database"
 	"go-kafka-order-producer/internal/server"
 )
 
@@ -11,12 +10,7 @@ func main() {
 		panic(err)
 	}
 
-	db := database.Connect()
-	defer db.Close()
-
-	database.Migrate(db)
-
-	s := server.Init(db)
+	s := server.Init()
 	s.Run()
 
 }
