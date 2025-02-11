@@ -18,7 +18,7 @@ import (
 
 func TestHandlePostOrder(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	kafkaMock := kafka.NewKafkaProducer(&kgo.Client{})
+	kafkaMock := kafka.NewKafka(&kgo.Client{})
 	Router(&gin.Default().RouterGroup, kafkaMock)
 	path := "/order/v1/"
 

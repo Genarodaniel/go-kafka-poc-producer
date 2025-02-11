@@ -1,11 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"go-kafka-order-producer/config"
+	"go-kafka-order-producer/internal/infra/events/kafka"
 	"go-kafka-order-producer/internal/server"
-
-	"github.com/twmb/franz-go/pkg/kgo"
 )
 
 func main() {
@@ -13,17 +11,12 @@ func main() {
 		panic(err)
 	}
 
-	seeds := []string{fmt.Sprintf("%s:%s", config.Config.KafkaHost, config.Config.KafkaPort)}
-	fmt.Println(seeds)
-	kafkaClient, err := kgo.NewClient(
-		kgo.SeedBrokers(seeds...),
-	)
+	kafkaClient, err := kafka.NewKafka(config.Config.KafkaSeeds, config.Config.KafkaTopics)
 	if err != nil {
 		panic(err)
 	}
-	defer kafkaClient.Close()
 
-	s := server.Init(kafkaClient)
+	s := server.Init(&kafkaClient)
 	s.Run()
 
 }

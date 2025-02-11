@@ -1,16 +1,19 @@
 package config
 
 import (
-	"log"
+	"fmt"
 
 	"github.com/spf13/viper"
 )
 
 type Env struct {
-	ServerPort string `mapstructure:"SERVER_PORT"`
-	GinMode    string `mapstructure:"GIN_MODE"`
-	KafkaHost  string `mapstructure:"KAFKA_HOST"`
-	KafkaPort  string `mapstructure:"KAFKA_PORT"`
+	ServerPort      string `mapstructure:"SERVER_PORT"`
+	GinMode         string `mapstructure:"GIN_MODE"`
+	KafkaHost       string `mapstructure:"KAFKA_HOST"`
+	KafkaPort       string `mapstructure:"KAFKA_PORT"`
+	KafkaTopicOrder string `mapstructure:"KAFKA_TOPIC_ORDER"`
+	KafkaTopics     []string
+	KafkaSeeds      []string
 }
 
 var Config Env
@@ -29,8 +32,8 @@ func Load() error {
 		return err
 	}
 
-	logger := log.Default()
-	logger.Print(&Config)
+	Config.KafkaSeeds = []string{fmt.Sprintf("%s:%s", Config.KafkaHost, Config.KafkaPort)}
+	Config.KafkaTopics = []string{Config.KafkaTopicOrder}
 
 	return nil
 }
