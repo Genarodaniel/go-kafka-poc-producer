@@ -9,6 +9,8 @@ import (
 type Env struct {
 	ServerPort string `mapstructure:"SERVER_PORT"`
 	GinMode    string `mapstructure:"GIN_MODE"`
+	KafkaHost  string `mapstructure:"KAFKA_HOST"`
+	KafkaPort  string `mapstructure:"KAFKA_PORT"`
 }
 
 var Config Env
