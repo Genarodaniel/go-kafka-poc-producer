@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"go-kafka-order-producer/internal/infra/events/kafka"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -12,15 +13,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/twmb/franz-go/pkg/kgo"
 )
 
 func TestHandlePostOrder(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	Router(&gin.Default().RouterGroup)
+	kafkaMock := kafka.NewKafkaProducer(&kgo.Client{})
+	Router(&gin.Default().RouterGroup, kafkaMock)
 	path := "/order/v1/"
 
 	t.Run("Should return error when payload is empty", func(t *testing.T) {
-		orderService := NewOrderService()
+		orderService := NewOrderService(kafkaMock)
 		addressHandler := NewOrderHandler(orderService)
 
 		w := httptest.NewRecorder()
@@ -40,7 +43,7 @@ func TestHandlePostOrder(t *testing.T) {
 		ioReader := bytes.NewBuffer(requestBytes)
 		ioRequest := io.NopCloser(ioReader)
 
-		orderService := NewOrderService()
+		orderService := NewOrderService(kafkaMock)
 		orderHandler := NewOrderHandler(orderService)
 
 		w := httptest.NewRecorder()
@@ -67,7 +70,7 @@ func TestHandlePostOrder(t *testing.T) {
 		ioReader := bytes.NewBuffer(requestBytes)
 		ioRequest := io.NopCloser(ioReader)
 
-		orderService := NewOrderService()
+		orderService := NewOrderService(kafkaMock)
 		orderHandler := NewOrderHandler(orderService)
 
 		w := httptest.NewRecorder()

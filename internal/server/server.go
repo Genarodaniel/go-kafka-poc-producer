@@ -4,9 +4,10 @@ import (
 	"go-kafka-order-producer/internal/api"
 
 	"github.com/gin-gonic/gin"
+	"github.com/twmb/franz-go/pkg/kgo"
 )
 
-func Init() *gin.Engine {
+func Init(kafkaClient *kgo.Client) *gin.Engine {
 
 	//update with config env value
 	gin.SetMode(gin.DebugMode)
@@ -14,7 +15,7 @@ func Init() *gin.Engine {
 	router.Use(gin.LoggerWithWriter(gin.DefaultWriter))
 	router.Use(gin.Recovery())
 
-	api.Router(router)
+	api.Router(router, kafkaClient)
 
 	return router
 }

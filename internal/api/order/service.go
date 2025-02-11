@@ -2,9 +2,7 @@ package order
 
 import (
 	"context"
-	"fmt"
-
-	"github.com/google/uuid"
+	"go-kafka-order-producer/internal/infra/events/kafka"
 )
 
 type OrderServiceInterface interface {
@@ -12,16 +10,21 @@ type OrderServiceInterface interface {
 }
 
 type OrderService struct {
+	KafkaProducer kafka.KafkaInterface
 }
 
-func NewOrderService() *OrderService {
-	return &OrderService{}
+func NewOrderService(kafkaProducer kafka.KafkaInterface) *OrderService {
+	return &OrderService{
+		KafkaProducer: kafkaProducer,
+	}
 }
 
-func (a *OrderService) PostOrder(ctx context.Context, order *PostOrderRequest) (*PostOrderResponse, error) {
-	fmt.Println(order)
+func (s *OrderService) PostOrder(ctx context.Context, order *PostOrderRequest) (*PostOrderResponse, error) {
+	if err := s.KafkaProducer.Produce(ctx, "orders", order); err != nil {
+		return nil, err
+	}
 
 	return &PostOrderResponse{
-		OrderID: uuid.NewString(),
+		OrderID: order.OrderID,
 	}, nil
 }

@@ -14,6 +14,7 @@ type PostOrderRequest struct {
 	Amount   float64 `json:"amount"`
 	ClientID string  `json:"client_id"`
 	StoreID  string  `json:"store_id"`
+	OrderID  string  `json:"-"`
 }
 
 func (request *PostOrderRequest) Validate() error {

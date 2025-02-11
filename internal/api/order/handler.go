@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type OrderHandlerInterface interface {
@@ -22,7 +23,9 @@ func NewOrderHandler(orderService OrderServiceInterface) *OrderHandler {
 }
 
 func (h *OrderHandler) HandlePostOrder(ctx *gin.Context) {
-	request := &PostOrderRequest{}
+	request := &PostOrderRequest{
+		OrderID: uuid.NewString(),
+	}
 	if err := ctx.ShouldBindJSON(request); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, responses.DefaultErrorResponse{
 			Error:   true,
