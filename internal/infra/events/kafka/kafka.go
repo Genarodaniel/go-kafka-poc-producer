@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sync"
 
 	"github.com/twmb/franz-go/pkg/kgo"
 )
@@ -36,8 +37,18 @@ func (k *Kafka) Produce(ctx context.Context, topic string, key string, body any)
 		return err
 	}
 
+	var wg sync.WaitGroup
+	wg.Add(1)
 	record := &kgo.Record{Topic: topic, Value: payload, Key: []byte(key)}
-	k.Client.ProduceSync(ctx, record)
+
+	k.Client.Produce(ctx, record, func(_ *kgo.Record, err error) {
+		defer wg.Done()
+		if err != nil {
+			fmt.Printf("record had a produce error: %v\n", err)
+		}
+
+	})
+	wg.Wait()
 	return nil
 }
 
