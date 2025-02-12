@@ -38,18 +38,22 @@ func (k *Kafka) Produce(ctx context.Context, topic string, key string, body any)
 	}
 
 	var wg sync.WaitGroup
+	var mutex sync.Mutex
 	wg.Add(1)
 	record := &kgo.Record{Topic: topic, Value: payload, Key: []byte(key)}
 
+	var errReturn error
 	k.Client.Produce(ctx, record, func(_ *kgo.Record, err error) {
 		defer wg.Done()
 		if err != nil {
-			fmt.Printf("record had a produce error: %v\n", err)
+			mutex.Lock()
+			errReturn = fmt.Errorf("record had a produce error: %v\n", err)
+			mutex.Unlock()
 		}
 
 	})
 	wg.Wait()
-	return nil
+	return errReturn
 }
 
 func (k *Kafka) SerializePayload(body any) ([]byte, error) {
