@@ -2,8 +2,15 @@ package order
 
 import (
 	"errors"
+	"go-kafka-order-producer/internal/infra/utils"
 
 	"github.com/google/uuid"
+)
+
+type OrderStatus string
+
+const (
+	OrderStatusCreated OrderStatus = "created"
 )
 
 type PostOrderResponse struct {
@@ -11,10 +18,12 @@ type PostOrderResponse struct {
 }
 
 type PostOrderRequest struct {
-	Amount   float64 `json:"amount"`
-	ClientID string  `json:"client_id"`
-	StoreID  string  `json:"store_id"`
-	OrderID  string  `json:"-"`
+	ClientID          string  `json:"client_id"`
+	StoreID           string  `json:"store_id"`
+	NotificationEmail string  `json:"notification_email"`
+	Status            string  `json:"-"`
+	OrderID           string  `json:"-"`
+	Amount            float64 `json:"amount"`
 }
 
 func (request *PostOrderRequest) Validate() error {
@@ -28,6 +37,10 @@ func (request *PostOrderRequest) Validate() error {
 
 	if err := uuid.Validate(request.StoreID); err != nil {
 		return errors.New("store_id must be a uuid")
+	}
+
+	if valid := utils.ValidateEmail(request.NotificationEmail); !valid {
+		return errors.New("notification_email invalid")
 	}
 
 	return nil
