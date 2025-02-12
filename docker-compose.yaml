@@ -1,23 +1,9 @@
 services:
-  db:
-    image: postgres:latest
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: changeme
-      POSTGRES_USER: orders_api
-      POSTGRES_DB: orders
-      SCHEMA: orders
-    volumes:
-      - .docker/postgres:/data/postgres
-    ports:
-      - "5432:5432"
   goapp:
     build: .
     ports:
       - "8080:8080"
     depends_on:
-      db:
-        condition: service_started
       broker:
         condition: service_started
   broker:
@@ -42,7 +28,7 @@ services:
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
-  init-kafka:
+  init-broker:
     image: confluentinc/cp-kafka:6.1.1
     depends_on:
       - broker
