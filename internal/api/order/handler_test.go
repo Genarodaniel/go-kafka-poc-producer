@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/brianvoe/gofakeit/v6"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -87,9 +88,10 @@ func TestHandlePostOrder(t *testing.T) {
 	t.Run("Should return an service error", func(t *testing.T) {
 		errorMessage := "error to save order transaction"
 		mockRequest := PostOrderRequest{
-			Amount:   123.00,
-			ClientID: uuid.NewString(),
-			StoreID:  uuid.NewString(),
+			Amount:            123.00,
+			ClientID:          uuid.NewString(),
+			StoreID:           uuid.NewString(),
+			NotificationEmail: gofakeit.Email(),
 		}
 
 		orderService := OrderServiceSpy{
@@ -117,9 +119,10 @@ func TestHandlePostOrder(t *testing.T) {
 
 	t.Run("Should create the order", func(t *testing.T) {
 		mockRequest := PostOrderRequest{
-			Amount:   123.00,
-			ClientID: uuid.NewString(),
-			StoreID:  uuid.NewString(),
+			Amount:            123.00,
+			ClientID:          uuid.NewString(),
+			StoreID:           uuid.NewString(),
+			NotificationEmail: gofakeit.Email(),
 		}
 
 		orderService := OrderServiceSpy{
