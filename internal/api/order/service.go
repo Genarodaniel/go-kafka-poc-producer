@@ -20,7 +20,7 @@ func NewOrderService(kafkaProducer kafka.KafkaInterface) *OrderService {
 }
 
 func (s *OrderService) PostOrder(ctx context.Context, order *PostOrderRequest) (*PostOrderResponse, error) {
-	if err := s.KafkaProducer.Produce(ctx, "orders", order); err != nil {
+	if err := s.KafkaProducer.Produce(ctx, "orders", "order.create", order); err != nil {
 		return nil, err
 	}
 

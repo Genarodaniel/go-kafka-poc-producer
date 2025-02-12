@@ -2,12 +2,12 @@ package server
 
 import (
 	"go-kafka-order-producer/internal/api"
+	"go-kafka-order-producer/internal/infra/events/kafka"
 
 	"github.com/gin-gonic/gin"
-	"github.com/twmb/franz-go/pkg/kgo"
 )
 
-func Init(kafkaClient *kgo.Client) *gin.Engine {
+func Init(kafkaClient *kafka.KafkaInterface) *gin.Engine {
 
 	//update with config env value
 	gin.SetMode(gin.DebugMode)

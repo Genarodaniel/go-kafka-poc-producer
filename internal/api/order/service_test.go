@@ -16,7 +16,7 @@ func TestPostOrder(t *testing.T) {
 	w := httptest.NewRecorder()
 	ctx, _ := gin.CreateTestContext(w)
 	t.Run("should return an uuid when created a new order", func(t *testing.T) {
-		orderService := NewOrderService(kafka.NewKafkaProducer(&kgo.Client{}))
+		orderService := NewOrderService(kafka.NewKafka(&kgo.Client{}))
 		response, err := orderService.PostOrder(ctx, &PostOrderRequest{
 			Amount:   123.00,
 			ClientID: uuid.NewString(),
