@@ -10,6 +10,13 @@ type HealthCheckInterface interface {
 	HealthCheck(c *gin.Context)
 }
 
-func HealthCheck(ctx *gin.Context) {
+type Healthcheck struct {
+}
+
+func NewHealthcheckHandler() HealthCheckInterface {
+	return &Healthcheck{}
+}
+
+func (h *Healthcheck) HealthCheck(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Health!"})
 }

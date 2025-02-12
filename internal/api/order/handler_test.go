@@ -13,23 +13,22 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"github.com/twmb/franz-go/pkg/kgo"
 )
 
 func TestHandlePostOrder(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	kafkaMock := kafka.NewKafka(&kgo.Client{})
+	kafkaMock := kafka.KafkaSpy{}
 	Router(&gin.Default().RouterGroup, kafkaMock)
 	path := "/order/v1/"
 
 	t.Run("Should return error when payload is empty", func(t *testing.T) {
 		orderService := NewOrderService(kafkaMock)
-		addressHandler := NewOrderHandler(orderService)
+		orderHandler := NewOrderHandler(orderService)
 
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
 		ctx.Request = httptest.NewRequest(http.MethodPost, path, nil)
-		addressHandler.HandlePostOrder(ctx)
+		orderHandler.HandlePostOrder(ctx)
 
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
