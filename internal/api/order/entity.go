@@ -21,8 +21,8 @@ type PostOrderRequest struct {
 	ClientID          string  `json:"client_id"`
 	StoreID           string  `json:"store_id"`
 	NotificationEmail string  `json:"notification_email"`
-	Status            string  `json:"-"`
-	OrderID           string  `json:"-"`
+	Status            string  `json:"status"`
+	OrderID           string  `json:"order_id"`
 	Amount            float64 `json:"amount"`
 }
 
