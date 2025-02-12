@@ -5,5 +5,6 @@ import (
 )
 
 func Router(g *gin.RouterGroup) {
-	g.GET("/", HealthCheck)
+	healthcheckHandler := NewHealthcheckHandler()
+	g.GET("/", healthcheckHandler.HealthCheck)
 }
